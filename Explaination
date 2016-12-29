@@ -1,0 +1,8 @@
+Library used - opencv.
+Method used - Thresholding.
+Procecedure - The image is first converted to grayscale image and then threshold is applied on it. After that, contouring is applied and circles representing WBC are marked.
+
+References - 
+http://www.bogotobogo.com/python/OpenCV_Python/python_opencv3_Image_Global_Thresholding_Adaptive_Thresholding_Otsus_Binarization_Segmentations.php
+http://docs.opencv.org/2.4/doc/tutorials/imgproc/threshold/threshold.html
+
