@@ -12,12 +12,10 @@ x = 225
 y = 109
 radius = 85
 img1 = img.copy()
-cv2.circle(img1, (int(x), int(y)), radius, (255, 0, 0),2)
+circle = cv2.circle(img1, (int(x), int(y)), radius, (255, 0, 0),2)
 img = rgb2gray(img1)
-
-
-snake = active_contour(gaussian(img, 3), init,
-                        alpha=0.015, beta=10, gamma=0.001)
+cv2.imshow("circle", img1)
+snake = active_contour(gaussian(img, 3), img1, alpha=0.015, beta=10, gamma=0.001)
 
 # fig = plt.figure(figsize=(7, 7))
 # ax = fig.add_subplot(111)

@@ -12,6 +12,7 @@ def auto_canny(image, sigma=0.33):
     # apply automatic Canny edge detection using the computed median
     lower = int(max(0, (1.0 - sigma) * v))
     upper = int(min(255, (1.0 + sigma) * v))
+    print lower, upper
     edged = cv2.Canny(image, lower, upper)
 
     # return the edged image
@@ -39,5 +40,9 @@ for imagePath in glob.glob(args["images"] + "/*.jpg"):
 
     # show the images
     cv2.imshow("Original", image)
-    cv2.imshow("Edges", np.hstack([wide, tight, auto]))
+    cv2.imshow("wide", wide)
+    cv2.waitKey(0)
+    cv2.imshow("tight", tight)
+    cv2.waitKey(0)
+    cv2.imshow("auto", auto)
     cv2.waitKey(0)

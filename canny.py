@@ -5,46 +5,63 @@ import cv2
 from skimage import feature
 np.set_printoptions(threshold=np.inf)
 
-# name = 'data/Train_Data/train-28.jpg'
-name = 'data/Train_Data/54A84627F362.jpg'
-
+name = 'data/Train_Data/train-28.jpg'
+# name = 'data/Train_Data/54A84627F362.jpg'
+# name = 'data/Train_Data/1467973104.jpg'
 
 img = cv2.imread(name,0)
-
 # Compute the Canny filter for two/ values of sigma
-print img.shape
-
 edges = feature.canny(img, sigma=4)
+edged = cv2.Canny(img, 129, 255)
 
 from skimage import img_as_ubyte
 cv_edges = img_as_ubyte(edges)
+kernel = np.ones((5,5), np.uint8)
 
-print cv_edges
+img_dilation = cv2.dilate(cv_edges, kernel, iterations=1)
 
-cnts = cv2.findContours(cv_edges, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)[-2]
+cnts = cv2.findContours(img_dilation, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)[-2]
 c = max(cnts, key=cv2.contourArea)
+
 area = cv2.contourArea(c)
-cv2.drawContours(img,cnts, -1 , (255,0,0), 1)
-print area
+cv2.drawContours(img,c, -1 , (255,0,0), 2)
 
+cv2.imwrite("trial.jpg", img)
 
-plt.subplot(141), plt.imshow(img, cmap='gray')
+plt.subplot(121), plt.imshow(img, cmap='gray')
 plt.title('Image'), plt.xticks([]), plt.yticks([])
 
-plt.subplot(142), plt.imshow(edges, cmap='gray')
+plt.subplot(122), plt.imshow(img_dilation, cmap='gray')
 plt.title('Image'), plt.xticks([]), plt.yticks([])
 
-
-plt.subplot(143), plt.imshow(cv_edges, cmap='gray')
-plt.title('Image'), plt.xticks([]), plt.yticks([])
-
-plt.subplot(144), plt.imshow(img, cmap='gray')
-plt.title('Image'), plt.xticks([]), plt.yticks([])
 
 plt.show()
 
-# img = cv2.GaussianBlur(img,(3,3),0)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# old code
+
+
+# img = cv2.GaussianBlur(img,(3,3),0)
+#
 # # convolute with proper kernels
 # laplacian = cv2.Laplacian(img,cv2.CV_64F)
 # sobelx = cv2.Sobel(img,cv2.CV_64F,1,0,ksize=5)  # x
@@ -60,7 +77,7 @@ plt.show()
 # plt.title('Sobel Y'), plt.xticks([]), plt.yticks([])
 #
 # plt.show()
-
+#
 # # display results
 # fig, (ax1, ax2, ax3) = plt.subplots(nrows=1, ncols=3, figsize=(8, 3), sharex=True, sharey=True)
 #

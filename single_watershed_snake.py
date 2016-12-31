@@ -20,14 +20,15 @@ def circle_levelset(shape, center, sqradius, scalerow=1.0):
 
 # def test_nodule():
     # Load the image.
-# name = 'data/Train_Data/train-25.jpg'
-name = 'data/Train_Data/54A84627F362.jpg'
 
+# name = 'data/Train_Data/train-28.jpg'
+# name = 'data/Train_Data/54A84627F362.jpg'
+# name = 'data/mama07ORI.bmp'
+name = 'trial.jpg'
 
-img = imread(name)[..., 0] / 255.0
-img_in = cv2.imread(name,-1)
-gray = cv2.cvtColor(img_in, cv2.COLOR_BGR2GRAY)
-
+img_in = cv2.imread(name,0)
+# gray = cv2.cvtColor(img_in, cv2.COLOR_BGR2GRAY)
+gray = img_in.copy()
 threshold = 65
 ret,thresh = cv2.threshold(gray,threshold,255,cv2.THRESH_BINARY_INV)
 
@@ -63,48 +64,56 @@ for label in np.unique(labels):
     cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
                             cv2.CHAIN_APPROX_NONE)[-2]
     c = max(cnts, key=cv2.contourArea)
-    final_image = np.zeros(gray.shape, dtype="uint8")
+    img_mask_inv = np.zeros(gray.shape, dtype="uint8")
 
     # Small areas are removed
     if(cv2.contourArea(c)>100):
         ((x, y), r) = cv2.minEnclosingCircle(c)
-        r = r + 5
+        r = r + 25
         cv2.circle(img_mask, (int(x), int(y)), int(r), (255, 0, 0), cv2.cv.CV_FILLED, 8, 0)
 
 for i in range(0, len(img_mask)):
     for j in range(0, len(img_mask[0])):
-        if (img_mask[i][j][0] == 255):
-            final_image[i, j] = 255
+        if (img_mask[i][j] == 255):
+            img_mask_inv[i, j] = 255
 
 masked_image = img_in.copy()
 for i in range(0, len(img_mask)):
     for j in range(0, len(img_mask[0])):
-        if (img_mask[i][j][0] != 255):
+        if (img_mask[i][j] != 255):
             masked_image[i, j] = 255
 
 plt.subplot(221), plt.imshow(img_in, cmap='gray')
-plt.title('Trial 1'), plt.xticks([]), plt.yticks([])
+plt.title('Input'), plt.xticks([]), plt.yticks([])
 
 plt.subplot(222), plt.imshow(img_mask, cmap='gray')
 plt.title('Trial 2'), plt.xticks([]), plt.yticks([])
 
-plt.subplot(223), plt.imshow(final_image, cmap='gray')
-plt.title('mask'), plt.xticks([]), plt.yticks([])
+plt.subplot(223), plt.imshow(img_mask_inv, cmap='gray')
+plt.title('mask image'), plt.xticks([]), plt.yticks([])
 
 plt.subplot(224), plt.imshow(masked_image, cmap='gray')
-plt.title('To be obtatined'), plt.xticks([]), plt.yticks([])
+plt.title('Final image'), plt.xticks([]), plt.yticks([])
 
 plt.show()
 
 # g(I)
-gI = morphsnakes.gborders(final_image, alpha=1000, sigma=5.88)
+gI = morphsnakes.gborders(masked_image, alpha=500, sigma=5.88)
+
+
+cv2.imshow("Mgac", gI)
+cv2.waitKey(0)
+
 ((x, y), r) = cv2.minEnclosingCircle(c)
 r = r - 1
 # Morphological GAC. Initialization of the level-set.
 mgac = morphsnakes.MorphGAC(gI, smoothing=1, threshold=0.31, balloon=1)
-mgac.levelset = circle_levelset(final_image.shape, (x, y), r)
+mgac.levelset = circle_levelset(masked_image.shape, (x, y), r)
 
 # Visual evolution.
+# for i in [1,2,3,4,5]:
+#     print i
+i = 15
 ppl.figure()
-morphsnakes.evolve_visual(mgac, num_iters=145, background=masked_image)
+morphsnakes.evolve_visual(mgac, num_iters=i, background=masked_image)
 ppl.show()
