@@ -57,6 +57,7 @@ for label in np.unique(labels):
     if (area>100):
     # draw a circle enclosing the object
         ((x, y), r) = cv2.minEnclosingCircle(c)
+        print x,y
         radius = int(r) + 5
         print radius
         # cv2.circle(img, (int(x), int(y)), radius, (255, 0, 0), 2)
@@ -71,7 +72,7 @@ for i in range(0, len(img)):
 complete = 'data/submission_trial/a.jpg'
 print complete
 
-cv2.imwrite(complete, final_image)
+# cv2.imwrite(complete, final_image)
 plt.subplot(221), plt.imshow(thresh, cmap='gray')
 plt.title('Image'), plt.xticks([]), plt.yticks([])
 

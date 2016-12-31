@@ -21,14 +21,15 @@ def circle_levelset(shape, center, sqradius, scalerow=1.0):
 # def test_nodule():
     # Load the image.
 # name = 'data/Train_Data/train-25.jpg'
-name = 'data/Train_Data/train-29.jpg'
+name = 'data/Train_Data/train-1.jpg'
+tobeobtained_name = 'data/Train_Data/train-1-mask.jpg'
 
 # name = 'data/Train_Data/54A84627F362.jpg'
+# img = imread(name)[..., 0] / 255.0
+img = cv2.imread(name, -1)
+tobeobtained = cv2.imread(tobeobtained_name,-1)
 
-
-img = imread(name)[..., 0] / 255.0
-img_in = cv2.imread(name,-1)
-gray = cv2.cvtColor(img_in, cv2.COLOR_BGR2GRAY)
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 threshold = 65
 ret,thresh = cv2.threshold(gray,threshold,255,cv2.THRESH_BINARY_INV)
@@ -46,8 +47,8 @@ markers = ndimage.label(localMax, structure=np.ones((3, 3)))[0]
 labels = watershed(-D, markers, mask=thresh)
 
 
-img_mask_contour = img_in.copy()
-img_mask = img_in.copy()
+# img_mask_contour = img_in.copy()
+# img_mask = img_in.copy()
 
 # loop over the unique labels returned by the Watershed algorithm
 for label in np.unique(labels):
@@ -70,43 +71,39 @@ for label in np.unique(labels):
     # Small areas are removed
     if(cv2.contourArea(c)>100):
         ((x, y), r) = cv2.minEnclosingCircle(c)
-        r = r + 5
-        cv2.circle(img_mask, (int(x), int(y)), int(r), (255, 0, 0), cv2.cv.CV_FILLED, 8, 0)
+        # r = r + 5
 
-for i in range(0, len(img_mask)):
-    for j in range(0, len(img_mask[0])):
-        if (img_mask[i][j][0] == 255):
-            final_image[i, j] = 255
-
-masked_image = img_in.copy()
-for i in range(0, len(img_mask)):
-    for j in range(0, len(img_mask[0])):
-        if (img_mask[i][j][0] != 255):
-            masked_image[i, j] = 255
-
-plt.subplot(221), plt.imshow(img_in, cmap='gray')
+plt.subplot(121), plt.imshow(img, cmap='gray')
 plt.title('Trial 1'), plt.xticks([]), plt.yticks([])
 
-plt.subplot(222), plt.imshow(img_mask, cmap='gray')
-plt.title('Trial 2'), plt.xticks([]), plt.yticks([])
-
-plt.subplot(223), plt.imshow(final_image, cmap='gray')
-plt.title('mask'), plt.xticks([]), plt.yticks([])
-
-plt.subplot(224), plt.imshow(masked_image, cmap='gray')
-plt.title('To be obtatined'), plt.xticks([]), plt.yticks([])
-
+# plt.subplot(122), plt.imshow(img_mask, cmap='gray')
+# plt.title('Trial 2'), plt.xticks([]), plt.yticks([])
+#
+# plt.subplot(223), plt.imshow(masked_image, cmap='gray')
+# plt.title('mask'), plt.xticks([]), plt.yticks([])
+#
+# plt.subplot(224), plt.imshow(tobeobtained, cmap='gray')
+# plt.title('To be obtatined'), plt.xticks([]), plt.yticks([])
 plt.show()
 
 # g(I)
-gI = morphsnakes.gborders(final_image, alpha=1000, sigma=5.88)
-((x, y), r) = cv2.minEnclosingCircle(c)
-r = r - 1
-# Morphological GAC. Initialization of the level-set.
+gI = morphsnakes.gborders(img, alpha=1000, sigma=5.88)
+
+# plt.subplot(111), plt.imshow(gI, cmap='gray')
+# plt.title('To be obtatined'), plt.xticks([]), plt.yticks([])
+# plt.show()
+
+# ((x, y), r) = cv2.minEnclosingCircle(c)
+# r = r - 1
+
 mgac = morphsnakes.MorphGAC(gI, smoothing=1, threshold=0.31, balloon=1)
-mgac.levelset = circle_levelset(final_image.shape, (x, y), r)
+print img.shape
+
+mgac.levelset = circle_levelset(img.shape, (x, y), r)
 
 # Visual evolution.
 ppl.figure()
-morphsnakes.evolve_visual(mgac, num_iters=60, background=masked_image)
+morphsnakes.evolve_visual(mgac, num_iters=55, background=img)
 ppl.show()
+
+plt.show()
