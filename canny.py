@@ -5,15 +5,13 @@ import cv2
 from skimage import feature
 np.set_printoptions(threshold=np.inf)
 
-name = 'data/Train_Data/train-28.jpg'
+name = 'data/Train_Data/train-1.jpg'
 # name = 'data/Train_Data/54A84627F362.jpg'
 # name = 'data/Train_Data/1467973104.jpg'
 
 img = cv2.imread(name,0)
 # Compute the Canny filter for two/ values of sigma
-edges = feature.canny(img, sigma=4)
-edged = cv2.Canny(img, 129, 255)
-
+edges = feature.canny(img, sigma=3)
 from skimage import img_as_ubyte
 cv_edges = img_as_ubyte(edges)
 kernel = np.ones((5,5), np.uint8)
@@ -21,10 +19,7 @@ kernel = np.ones((5,5), np.uint8)
 img_dilation = cv2.dilate(cv_edges, kernel, iterations=1)
 
 cnts = cv2.findContours(img_dilation, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)[-2]
-c = max(cnts, key=cv2.contourArea)
-
-area = cv2.contourArea(c)
-cv2.drawContours(img,c, -1 , (255,0,0), 2)
+cv2.drawContours(img,cnts, -1 , (255,0,0), 2)
 
 cv2.imwrite("trial.jpg", img)
 

@@ -1,5 +1,5 @@
-Library used - opencv.
-Method used - Thresholding.
+Library used - opencv and morphsnake.
+Method used - Thresholding -> Contouring -> Canny edge detectiong -> GVF snakes.
 Procecedure - The image is first converted to grayscale image and then threshold is applied on it. After that, contouring is applied and circles representing WBC are marked.
 
 References - 

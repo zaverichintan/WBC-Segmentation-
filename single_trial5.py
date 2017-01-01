@@ -7,9 +7,13 @@ from scipy import ndimage
 
 # read image
 # name = 'data/Train_Data/54A84627F362.jpg'
-name = 'data/Train_Data/train-25.jpg'
-img = cv2.imread(name,-1)
+# name = 'data/Train_Data/train-25.jpg'
+name = 'trial.jpg'
+
+img = cv2.imread(name,1)
+
 cv2.imshow("img",img)
+cv2.waitKey(0)
 # convert image to grayscale
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -21,14 +25,13 @@ ret,thresh = cv2.threshold(gray,threshold,255,cv2.THRESH_BINARY_INV)
 cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
                         cv2.CHAIN_APPROX_SIMPLE)[-2]
 c = max(cnts, key=cv2.contourArea)
-
 area = cv2.contourArea(c)
-
 final_image = np.zeros(gray.shape, dtype="uint8")
-
+print area
 # removing small areas
-if (area>100):
+if (area<2000 and area>100):
 # draw a circle enclosing the object
+    print "in"
     ((x, y), r) = cv2.minEnclosingCircle(c)
     print x , y
     radius = int(r) - 5
